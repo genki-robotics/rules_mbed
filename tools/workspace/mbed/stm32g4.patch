@@ -1909,9 +1909,9 @@ index 0000000000..9955ac8ae7
 +    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
 +    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
 +    RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV4;
-+    RCC_OscInitStruct.PLL.PLLN = 85;
++    RCC_OscInitStruct.PLL.PLLN = 80;  /* Changed from 85 to 80 for 160 MHz */
 +    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-+    RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
++    RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV4;  /* Changed to DIV4 for 80 MHz CAN clock */
 +    RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
 +    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
 +        return 0; // FAIL
@@ -1921,9 +1921,9 @@ index 0000000000..9955ac8ae7
 +    /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 clocks dividers */
 +    RCC_ClkInitStruct.ClockType      = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
 +    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1; // 170 MHz
-+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  //  42.5 MHz
-+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  //  85 MHz
++    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1; // 160 MHz
++    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;  //  80 MHz (FDCAN clock)
++    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  //  80 MHz
 +    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_6) != HAL_OK) {
 +        return 0; // FAIL
 +    }
