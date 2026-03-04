@@ -1,17 +1,18 @@
-From eec378a1f2654f54e45173bd0e834ef9460fa80e Mon Sep 17 00:00:00 2001
+From b6d5c68981434ec908ad29c7a26c39a77a18e21f Mon Sep 17 00:00:00 2001
 From: Jean-Baptiste Theou <jb@genki.com>
-Date: Mon, 7 Jul 2025 05:57:39 +0800
+Date: Wed, 4 Mar 2026 08:41:01 -1000
 Subject: [PATCH] target: STM32G4: add support
 
 Based on HAL v1.2.5
-
 Also add a NOINIT section for communication.
+
+Add needed PE pins support for TIM1 6x PWM
 
 Signed-off-by: Jean-Baptiste Theou <jb@genki.com>
 ---
  .../TARGET_NUCLEO_F446RE/#PeripheralPins.c#   |   342 +
  .../TARGET_NUCLEO_G474RE/PeripheralNames.h    |   102 +
- .../TARGET_NUCLEO_G474RE/PeripheralPins.c     |   478 +
+ .../TARGET_NUCLEO_G474RE/PeripheralPins.c     |   480 +
  .../TARGET_NUCLEO_G474RE/PinNames.h           |   330 +
  .../TARGET_NUCLEO_G474RE/system_clock.c       |   218 +
  .../device/TOOLCHAIN_GCC_ARM/STM32G474XE.ld   |   191 +
@@ -223,7 +224,7 @@ Signed-off-by: Jean-Baptiste Theou <jb@genki.com>
  targets/TARGET_STM/mbed_overrides.c           |     6 +
  targets/TARGET_STM/stm_spi_api.c              |     4 +-
  targets/targets.json                          |    24 +
- 214 files changed, 282912 insertions(+), 2 deletions(-)
+ 214 files changed, 282914 insertions(+), 2 deletions(-)
  create mode 100644 targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F446xE/TARGET_NUCLEO_F446RE/#PeripheralPins.c#
  create mode 100644 targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/PeripheralNames.h
  create mode 100644 targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/PeripheralPins.c
@@ -894,10 +895,10 @@ index 0000000000..de99926cb6
 +#endif
 diff --git a/targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/PeripheralPins.c b/targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/PeripheralPins.c
 new file mode 100644
-index 0000000000..aebf3977ae
+index 0000000000..cf90157ef0
 --- /dev/null
 +++ b/targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/PeripheralPins.c
-@@ -0,0 +1,478 @@
+@@ -0,0 +1,480 @@
 +/* mbed Microcontroller Library
 + *******************************************************************************
 + * Copyright (c) 2018, STMicroelectronics
@@ -1154,9 +1155,9 @@ index 0000000000..aebf3977ae
 +    {PB_8,       PWM_4,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF2_TIM4, 3, 0)}, // TIM4_CH3
 +    {PB_8_ALT0,  PWM_8,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF10_TIM8, 2, 0)}, // TIM8_CH2
 +    {PB_8_ALT1,  PWM_8,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF1_TIM16, 1, 0)}, // TIM16_CH1
-+    //    {PB_9,       PWM_1,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF12_TIM1, 2, 1)}, // TIM1_CH3N
-+    {PB_9,  PWM_4,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF2_TIM4, 4, 0)}, // TIM4_CH4
-+    {PB_9_ALT0,  PWM_8,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF10_TIM8, 3, 0)}, // TIM8_CH3
++    {PB_9,       PWM_1,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF12_TIM1, 3, 1)}, // TIM1_CH3N
++    {PB_9_ALT0,  PWM_4,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF2_TIM4, 4, 0)}, // TIM4_CH4
++    {PB_9_ALT1,  PWM_8,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF10_TIM8, 3, 0)}, // TIM8_CH3
 +    {PB_9_ALT2,  PWM_17, STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF1_TIM17, 1, 0)}, // TIM17_CH1
 +    {PB_10,      PWM_2,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF1_TIM2, 3, 0)}, // TIM2_CH3
 +    {PB_11,      PWM_2,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF1_TIM2, 4, 0)}, // TIM2_CH4
@@ -1197,6 +1198,8 @@ index 0000000000..aebf3977ae
 +    {PD_13,      PWM_4,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF2_TIM4, 2, 0)}, // TIM4_CH2
 +    {PD_14,      PWM_4,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF2_TIM4, 3, 0)}, // TIM4_CH3
 +    {PD_15,      PWM_4,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF2_TIM4, 4, 0)}, // TIM4_CH4
++
++    {PE_13,      PWM_1,  STM_PIN_DATA_EXT(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF2_TIM1, 3, 0)}, // TIM1_CH3
 +
 +    // TODO PE and beyond
 +
@@ -284658,5 +284661,5 @@ index b106ba1719..8bed54a7c4 100644
          "version": "1",
          "public": false
 -- 
-2.50.0
+2.53.0
 
