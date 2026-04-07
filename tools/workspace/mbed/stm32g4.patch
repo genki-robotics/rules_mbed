@@ -1,4 +1,4 @@
-From b6d5c68981434ec908ad29c7a26c39a77a18e21f Mon Sep 17 00:00:00 2001
+From d06bdf52a6cb364e313b256d214d6d4d90b3461b Mon Sep 17 00:00:00 2001
 From: Jean-Baptiste Theou <jb@genki.com>
 Date: Wed, 4 Mar 2026 08:41:01 -1000
 Subject: [PATCH] target: STM32G4: add support
@@ -7,6 +7,7 @@ Based on HAL v1.2.5
 Also add a NOINIT section for communication.
 
 Add needed PE pins support for TIM1 6x PWM
+Fix PA0/1 ADC configuration
 
 Signed-off-by: Jean-Baptiste Theou <jb@genki.com>
 ---
@@ -895,7 +896,7 @@ index 0000000000..de99926cb6
 +#endif
 diff --git a/targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/PeripheralPins.c b/targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/PeripheralPins.c
 new file mode 100644
-index 0000000000..cf90157ef0
+index 0000000000..f1da2c9e07
 --- /dev/null
 +++ b/targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/PeripheralPins.c
 @@ -0,0 +1,480 @@
@@ -954,10 +955,10 @@ index 0000000000..cf90157ef0
 +//*** ADC ***
 +
 +MBED_WEAK const PinMap PinMap_ADC[] = {
-+    {PA_0,       ADC_1, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 0, 0)}, // ADC1_IN0
-+    {PA_0_ALT0,  ADC_2, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 0, 0)}, // ADC2_IN0
-+    {PA_1,       ADC_1, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 1, 0)}, // ADC1_IN1
-+    {PA_1_ALT0,  ADC_2, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 1, 0)}, // ADC2_IN1
++    {PA_0,       ADC_1, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 1, 0)}, // ADC1_IN1
++    {PA_0_ALT0,  ADC_2, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 1, 0)}, // ADC2_IN1
++    {PA_1,       ADC_1, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 2, 0)}, // ADC1_IN2
++    {PA_1_ALT0,  ADC_2, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 2, 0)}, // ADC2_IN2
 +    {PA_2,       ADC_1, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 3, 0)}, // ADC1_IN3
 +    {PA_3,       ADC_1, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 4, 0)}, // ADC1_IN4
 +    {PA_4,       ADC_2, STM_PIN_DATA_EXT(STM_MODE_ANALOG, GPIO_NOPULL, 0, 17, 0)}, // ADC1_IN17
@@ -1717,7 +1718,7 @@ index 0000000000..d3eb006e5d
 +#endif
 diff --git a/targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/system_clock.c b/targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/system_clock.c
 new file mode 100644
-index 0000000000..9955ac8ae7
+index 0000000000..310c045e53
 --- /dev/null
 +++ b/targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE/system_clock.c
 @@ -0,0 +1,218 @@
@@ -284661,5 +284662,5 @@ index b106ba1719..8bed54a7c4 100644
          "version": "1",
          "public": false
 -- 
-2.53.0
+2.51.0
 
