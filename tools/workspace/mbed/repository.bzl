@@ -381,6 +381,7 @@ def mbed_repository(
         patches = [
             Label("//tools/workspace/mbed:mbed.patch"),
             Label("//tools/workspace/mbed:stm32g4.patch"),
+            Label("//tools/workspace/mbed:stm32g4_hse.patch"),
         ],
         patch_args = ["-p1"],
     )
